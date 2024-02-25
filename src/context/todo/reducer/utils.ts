@@ -23,7 +23,7 @@ export const INITIAL_STATE = [
 	{
 		id: '3',
 		note: '',
-		status: taskStatusEnums.complete,
+		status: taskStatusEnums.completed,
 		address: 'Miami Lakes Golf Club',
 		title: 'Eliminar las malas hierbas del jardín',
 		description:
@@ -40,7 +40,7 @@ export const INITIAL_STATE = [
 	},
 	{
 		id: '5',
-		status: taskStatusEnums.incomplete,
+		status: taskStatusEnums.incompleted,
 		address: `Flanigan's Seafood Bar & Grill 14301 W Sunrise Blvd, Sunrise`,
 		note: 'Contactar a un especialista en árboles',
 		title: 'Evaluar la salud de la palma real en el patio',
