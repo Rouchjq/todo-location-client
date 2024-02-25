@@ -16,26 +16,26 @@ import { FC } from 'react';
 interface TaskCardProps extends TaskDataType {}
 
 export const TaskCard: FC<TaskCardProps> = ({ ...props }) => {
-	return (
-		<Row className='shadow-lg'>
-			<Col xs={10} className='flex flex-col gap-1'>
-				<Typography fontSize='body' className='text-zinc-300'>
-					#{props.id}
-				</Typography>
-				<Typography
-					Tag='h3'
-					fontSize='subtitle'
-					color='foreground'
-					weight='semiBold'
-				>
-					{props.title}
-				</Typography>
-				<div className={classes.address}>
-					<Typography fontSize='minimum' color='foreground'>
-						{props.address}
-					</Typography>
-				</div>
-			</Col>
-		</Row>
-	);
+  return (
+    <Row className="p-4 border rounded-lg hover:shadow-md transition-all cursor-pointer bg-background-100">
+      <Col xs={10} className="flex flex-col gap-1">
+        <Typography fontSize="body" className="text-zinc-300">
+          #{props.id}
+        </Typography>
+        <Typography
+          Tag="h3"
+          fontSize="subtitle"
+          color="foreground"
+          weight="semiBold"
+        >
+          {props.title}
+        </Typography>
+        <div className={classes.address}>
+          <Typography fontSize="minimum" color="foreground">
+            {props.address}
+          </Typography>
+        </div>
+      </Col>
+    </Row>
+  );
 };
