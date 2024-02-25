@@ -97,7 +97,7 @@ export const Map: FC<MapProps> = ({}) => {
 
 	useEffect(() => {
 		if (todoState) {
-			const promises = todoState.map(async (task) => {
+			const promises = todoState?.map(async (task) => {
 				const id = task.id;
 				try {
 					const coords = await getLatLng(task.address);
