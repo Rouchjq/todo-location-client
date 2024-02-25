@@ -8,31 +8,37 @@ import {
 	DirectionsRenderer,
 } from '@react-google-maps/api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 // utils
 import { centerMap, getLatLng } from './utils';
 
 // hooks
 import { useWindowSize } from '@/hooks/use-window-size';
+import { useLocation } from '@/hooks/use-location';
 import { useTodo } from '@/hooks/use-todo';
+import { useMap } from '@/hooks/use-map';
 
 // types
-import { DirectionsValueDataType } from '@/types/models/map/direction';
 import { FC } from 'react';
 
-type MapProps = {
-	directionsValue: DirectionsValueDataType;
-};
+type MapProps = {};
 
-export const Map: FC<MapProps> = ({ directionsValue }) => {
+export const Map: FC<MapProps> = ({}) => {
 	const { todoState } = useTodo();
+	const { directionsValue } = useMap();
 	const { screenWidth } = useWindowSize();
+	const { location, error } = useLocation();
+	const [center, setcenter] = useState<google.maps.LatLngLiteral>();
+
 	const [marks, setMarks] = useState<
 		{ id: string; coords: google.maps.LatLngLiteral | null }[]
 	>([]);
+
 	const [response, setResponse] = useState<google.maps.DirectionsResult | null>(
 		null,
 	);
+
 	const directionsServiceOptions = useMemo<google.maps.DirectionsRequest>(
 		() => ({
 			origin: directionsValue.origin,
@@ -60,7 +66,7 @@ export const Map: FC<MapProps> = ({ directionsValue }) => {
 					setResponse(result);
 				} else {
 					console.log('response: ', result);
-					// TODO: handle error with a toast
+					toast.error(`Error fetching directions ${status}`);
 				}
 			}
 		},
@@ -80,6 +86,14 @@ export const Map: FC<MapProps> = ({ directionsValue }) => {
 			infoWinfow.open({ map: marker.getMap(), anchor: marker }),
 		);
 	};
+
+	useEffect(() => {
+		if (location) {
+			setcenter(location);
+		} else {
+			setcenter(centerMap.mi);
+		}
+	}, [location]);
 
 	useEffect(() => {
 		if (todoState) {
@@ -105,16 +119,15 @@ export const Map: FC<MapProps> = ({ directionsValue }) => {
 			<GoogleMap
 				zoom={11}
 				id='todo-map'
-				center={centerMap.mi}
+				center={center}
 				options={{
 					controlSize: 24,
 					zoomControl: true,
 					disableDefaultUI: true,
 				}}
-				// clickableIcons={false}
 				mapContainerStyle={{
 					width: '100vw',
-					height: screenWidth < 768 ? '69vh' : '80vh',
+					height: screenWidth < 768 ? '70vh' : '80vh',
 				}}
 			>
 				{directionsValue.destination !== '' && directionsValue.origin !== '' && (

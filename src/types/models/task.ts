@@ -4,6 +4,7 @@ import { taskStatusEnums } from '@/commons/enums';
 export type TaskDataType = {
 	id: string;
 	note: string;
+	date: string;
 	title: string;
 	address: string;
 	description: string;

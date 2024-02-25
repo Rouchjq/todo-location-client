@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 
 // styles
 import './globals.css';
+import { Toaster } from '@/components/atoms/toast';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-main' });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
 		<html lang='en'>
 			<body className={cn('bg-background font-sans antialiased', inter.variable)}>
 				<Providers>{children}</Providers>
+				<Toaster position='top-center' />
 			</body>
 		</html>
 	);

@@ -1,5 +1,7 @@
 // main tools
 import { useState } from 'react';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 // components
 import {
@@ -21,16 +23,22 @@ import { Col } from '@/components/atoms/col';
 import { Row } from '@/components/atoms/row';
 
 // hooks
+import { useLocation } from '@/hooks/use-location';
 import { useTodo } from '@/hooks/use-todo';
+import { useMap } from '@/hooks/use-map';
 
 // utils
 import { todoCases } from '@/context/todo/reducer/case';
+import { base_url } from '@/commons';
 
 // enums
-import { taskStatusEnums } from '@/commons/enums';
+import { taskStatusEnums, travelModeEnums } from '@/commons/enums';
 
 // utils
 import { selectOptions } from './utils';
+
+// icons
+import { ExclamationCircleFill } from 'react-bootstrap-icons';
 
 // styles
 import classes from './styles.module.css';
@@ -38,11 +46,19 @@ import classes from './styles.module.css';
 // type
 import { TaskDataType } from '@/types/models/task';
 import { ChangeEvent, FC } from 'react';
+import { SetStateType } from '@/types';
 
-interface TaskDetailsProps extends TaskDataType {}
+interface TaskDetailsProps extends TaskDataType {
+	setShowTaskList: SetStateType<boolean>;
+}
 
-export const TaskDetails: FC<TaskDetailsProps> = ({ ...props }) => {
-	const { dispatch } = useTodo();
+export const TaskDetails: FC<TaskDetailsProps> = ({
+	setShowTaskList,
+	...props
+}) => {
+	const { setDirectionsValue } = useMap();
+	const { todoState, dispatch } = useTodo();
+	const { location, error } = useLocation();
 	const [note, setNote] = useState(props.note);
 	const [status, setStatus] = useState(props.status);
 
@@ -65,6 +81,49 @@ export const TaskDetails: FC<TaskDetailsProps> = ({ ...props }) => {
 			type: todoCases.EDIT_NOTE,
 			payload: { id: props.id, note: value },
 		});
+	};
+
+	const checkChangesExist = () => {
+		const findedTask = todoState?.find((item) => item.id === props.id);
+
+		if (findedTask)
+			return findedTask.status !== props.status || findedTask.note !== props.note;
+		else return false;
+	};
+
+	const handleSaveChange = async () => {
+		try {
+			const { data } = await axios.put(`${base_url}/${props.id}`, {
+				note: props.note,
+				status: props.status,
+			});
+
+			toast.success(`Changes saves correctly`);
+		} catch (err) {
+			console.log('🚀 ~ handleSaveChange ~ err:', err);
+			toast.error(`Error save changes: ${err}`);
+		}
+	};
+
+	const handleTraceRoute = async () => {
+		if (!location) return toast.error('Error getting location');
+		if (error) return toast.error(`Error getting location: ${error}`);
+
+		if (checkChangesExist()) {
+			toast('You have unsaved changes', {
+				icon: <ExclamationCircleFill />,
+				description: ' saving changes automatically...',
+			});
+			await handleSaveChange();
+		}
+
+		setDirectionsValue({
+			destination: props.address,
+			travelMode: travelModeEnums.DRIVING,
+			origin: `${location.lat}, ${location.lng}`,
+		});
+
+		setShowTaskList(false);
 	};
 
 	return (
@@ -115,12 +174,21 @@ export const TaskDetails: FC<TaskDetailsProps> = ({ ...props }) => {
 				</Typography>
 			</div>
 
-			<div>
+			<div className='mb-5'>
 				<Textarea
 					value={note}
 					placeholder='Enter Notes'
 					onChange={(e) => handleChangeNote(e)}
 				/>
+			</div>
+
+			<div className='flex justify-between'>
+				<Button variant='secondary' onClick={handleTraceRoute}>
+					Trace route
+				</Button>
+				<Button variant='secondary' onClick={handleSaveChange}>
+					Save
+				</Button>
 			</div>
 		</div>
 	);

@@ -4,6 +4,7 @@ import { ThemeProvider } from './theme';
 
 // types
 import { FC, ReactNode } from 'react';
+import { MapContextProvider } from '@/context/map/provider';
 
 type ProvidersProps = {
 	children: ReactNode;
@@ -17,7 +18,9 @@ export const Providers: FC<ProvidersProps> = ({ children }) => {
 			defaultTheme='system'
 			disableTransitionOnChange
 		>
-			<AppContextProviders>{children}</AppContextProviders>
+			<AppContextProviders>
+				<MapContextProvider>{children}</MapContextProvider>
+			</AppContextProviders>
 		</ThemeProvider>
 	);
 };

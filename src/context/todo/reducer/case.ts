@@ -1,4 +1,5 @@
 export const todoCases = {
 	EDIT_NOTE: 'EDIT_NOTE',
+	GET_ALL_TASKS: 'GET_ALL_TASKS',
 	CHANGE_STATUS: 'CHANGE_STATUS',
 };

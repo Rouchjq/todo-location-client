@@ -5,6 +5,8 @@ import { taskStatusEnums } from '@/commons/enums';
 import { TaskDataType } from '@/types/models/task';
 
 export const todoActions = {
+	getAllTasks: (payload: TaskDataType[]) => payload,
+
 	changeStatus: (
 		state: TaskDataType[],
 		payload: { id: string; status: keyof typeof taskStatusEnums },

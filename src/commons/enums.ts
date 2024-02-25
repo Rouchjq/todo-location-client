@@ -22,9 +22,9 @@ export const colorsEnums = {
 
 export const taskStatusEnums = Object.freeze({
 	pending: 'pending',
-	complete: 'complete',
-	incomplete: 'incomplete',
+	completed: 'completed',
 	inProgress: 'inProgress',
+	incompleted: 'incompleted',
 });
 
 export const travelModeEnums = Object.freeze({

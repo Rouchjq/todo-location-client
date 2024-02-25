@@ -6,7 +6,7 @@ import { TaskDataType } from '@/types/models/task';
 import { Dispatch } from 'react';
 
 type TodoContextProps = {
-	todoState: TaskDataType[];
+	todoState?: TaskDataType[];
 	dispatch: Dispatch<{
 		type: string;
 		payload: any;
@@ -14,6 +14,6 @@ type TodoContextProps = {
 };
 
 export const TodoContext = createContext<TodoContextProps>({
-	todoState: [],
+	todoState: undefined,
 	dispatch: () => {},
 });

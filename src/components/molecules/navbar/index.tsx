@@ -38,7 +38,7 @@ export const Navbar: FC = () => {
 			<Drawer open={showTaskList} onClose={() => setShowTaskList(false)}>
 				<DrawerPortal>
 					<DrawerContent className={cn('', classes.drawer_content)}>
-						<Todo />
+						<Todo setShowTaskList={setShowTaskList} />
 					</DrawerContent>
 				</DrawerPortal>
 			</Drawer>

@@ -11,11 +11,17 @@ import { Input } from '@/components/atoms/input';
 import { ToggleTheme } from '../toggle-theme';
 import { Label } from '@/components/label';
 
+// commons
+import { travelModeEnums } from '@/commons/enums';
+
 // utils
 import { cn } from '@/lib/utils';
 
-// styles
-import classes from './styles.module.css';
+// hooks
+import { useLocation } from '@/hooks/use-location';
+import { useMap } from '@/hooks/use-map';
+
+// icons
 import {
 	Bicycle,
 	BusFrontFill,
@@ -23,29 +29,24 @@ import {
 	PersonWalking,
 } from 'react-bootstrap-icons';
 
+// styles
+import classes from './styles.module.css';
+
 // types
-import { DirectionsValueDataType } from '@/types/models/map/direction';
-import { FC, FormEvent, MutableRefObject, use, useEffect } from 'react';
-import { SetStateType } from '@/types';
-import { travelModeEnums } from '@/commons/enums';
-import { useLocation } from '@/hooks/use-location';
+import { FC, FormEvent, ChangeEvent } from 'react';
 
-type HeaderProps = {
-	isLoaded: boolean;
-	directionsValue: DirectionsValueDataType;
-	originRef: MutableRefObject<HTMLInputElement | null>;
-	destinationRef: MutableRefObject<HTMLInputElement | null>;
-	setDirectionsValue: SetStateType<DirectionsValueDataType>;
-};
+type HeaderProps = {};
 
-export const Header: FC<HeaderProps> = ({
-	isLoaded,
-	originRef,
-	destinationRef,
-	directionsValue,
-	setDirectionsValue,
-}) => {
+export const Header: FC<HeaderProps> = ({}) => {
 	const { location } = useLocation();
+	const {
+		isLoaded,
+		fromToAddress,
+		directionsValue,
+		setFromToAddress,
+		setDirectionsValue,
+	} = useMap();
+
 	const handleTravelMode = (mode: string) =>
 		setDirectionsValue((prev) => ({ ...prev, travelMode: mode }));
 
@@ -53,14 +54,22 @@ export const Header: FC<HeaderProps> = ({
 		e.preventDefault();
 		setDirectionsValue((prev) => ({
 			...prev,
-			origin: originRef.current?.value || '',
-			destination: destinationRef.current?.value || '',
+			origin: fromToAddress.origin,
+			destination: fromToAddress.destination,
 		}));
 	};
 
+	const handleChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setFromToAddress((prev) => ({ ...prev, [name]: value }));
+	};
+
 	const handleMyLocation = () => {
-		if (location && originRef && originRef.current) {
-			originRef.current.value = `${location.lat}, ${location.lng}`;
+		if (location) {
+			setFromToAddress((prev) => ({
+				...prev,
+				origin: `${location.lat}, ${location.lng}`,
+			}));
 		}
 	};
 
@@ -84,11 +93,23 @@ export const Header: FC<HeaderProps> = ({
 							<form onSubmit={handleSubmitDirections} className='grid gap-2'>
 								<div className='grid grid-cols-3 items-center gap-4'>
 									<Label htmlFor='origin'>Origin</Label>
-									<Input id='origin' ref={originRef} className='col-span-2 h-8' />
+									<Input
+										id='origin'
+										name='origin'
+										className='col-span-2 h-8'
+										value={fromToAddress.origin}
+										onChange={handleChangeAddress}
+									/>
 								</div>
 								<div className='grid grid-cols-3 items-center gap-4'>
-									<Label htmlFor='destiny'>Destiny</Label>
-									<Input id='destiny' ref={destinationRef} className='col-span-2 h-8' />
+									<Label htmlFor='destination'>Destiny</Label>
+									<Input
+										id='destination'
+										name='destination'
+										className='col-span-2 h-8'
+										onChange={handleChangeAddress}
+										value={fromToAddress.destination}
+									/>
 								</div>
 								{isLoaded ? (
 									<div className='flex justify-evenly '>
@@ -97,7 +118,7 @@ export const Header: FC<HeaderProps> = ({
 											onClick={() => handleTravelMode(google.maps.TravelMode.DRIVING)}
 											variant={
 												directionsValue.travelMode === travelModeEnums.DRIVING
-													? 'default'
+													? 'ghost'
 													: 'outline'
 											}
 										>
@@ -109,7 +130,7 @@ export const Header: FC<HeaderProps> = ({
 											onClick={() => handleTravelMode(google.maps.TravelMode.BICYCLING)}
 											variant={
 												directionsValue.travelMode === travelModeEnums.BICYCLING
-													? 'default'
+													? 'ghost'
 													: 'outline'
 											}
 										>
@@ -121,7 +142,7 @@ export const Header: FC<HeaderProps> = ({
 											onClick={() => handleTravelMode(google.maps.TravelMode.TRANSIT)}
 											variant={
 												directionsValue.travelMode === travelModeEnums.TRANSIT
-													? 'default'
+													? 'ghost'
 													: 'outline'
 											}
 										>
@@ -133,7 +154,7 @@ export const Header: FC<HeaderProps> = ({
 											onClick={() => handleTravelMode(google.maps.TravelMode.WALKING)}
 											variant={
 												directionsValue.travelMode === travelModeEnums.WALKING
-													? 'default'
+													? 'ghost'
 													: 'outline'
 											}
 										>
