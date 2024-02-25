@@ -28,8 +28,9 @@ export const TodoContextProvider: FC<TodoContextProps> = ({ children }) => {
 
 	const getAllTasks = useCallback(async () => {
 		try {
-			const { data } = await axios.get(`${base_url}`);
-			return data;
+			const { data, status } = await axios.get(`${base_url}`);
+			if (status === 200) return data;
+			else return [];
 		} catch (error) {
 			console.error(error);
 			toast.error(`Error fetching tasks:${error}`);
