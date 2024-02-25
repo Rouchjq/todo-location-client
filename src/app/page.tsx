@@ -46,11 +46,11 @@ export default function HomePage() {
 				directionsValue={directionsValue}
 				setDirectionsValue={setDirectionsValue}
 			/>
-			<main className='h-[80vh]'>
+			<main className='h-[69vh] md:h-[80vh] '>
 				{isLoaded ? (
 					<Map directionsValue={directionsValue} />
 				) : (
-					<Skeleton className='w-full h-[80vh]' />
+					<Skeleton className='w-full h-[70vh]' />
 				)}
 			</main>
 			<Navbar />

@@ -1,28 +1,24 @@
 'use client';
 
+// main tools
 import {
 	Marker,
 	GoogleMap,
 	DirectionsService,
 	DirectionsRenderer,
 } from '@react-google-maps/api';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+// utils
+import { centerMap, getLatLng } from './utils';
+
+// hooks
+import { useWindowSize } from '@/hooks/use-window-size';
+import { useTodo } from '@/hooks/use-todo';
 
 // types
-import {
-	FC,
-	MutableRefObject,
-	use,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
-import { centerMap, getLatLng } from './utils';
-import { SetStateType } from '@/types';
 import { DirectionsValueDataType } from '@/types/models/map/direction';
-import { useLocation } from '@/hooks/use-location';
-import { useTodo } from '@/hooks/use-todo';
+import { FC } from 'react';
 
 type MapProps = {
 	directionsValue: DirectionsValueDataType;
@@ -30,6 +26,7 @@ type MapProps = {
 
 export const Map: FC<MapProps> = ({ directionsValue }) => {
 	const { todoState } = useTodo();
+	const { screenWidth } = useWindowSize();
 	const [marks, setMarks] = useState<
 		{ id: string; coords: google.maps.LatLngLiteral | null }[]
 	>([]);
@@ -117,7 +114,7 @@ export const Map: FC<MapProps> = ({ directionsValue }) => {
 				// clickableIcons={false}
 				mapContainerStyle={{
 					width: '100vw',
-					height: '80vh',
+					height: screenWidth < 768 ? '69vh' : '80vh',
 				}}
 			>
 				{directionsValue.destination !== '' && directionsValue.origin !== '' && (
