@@ -25,7 +25,6 @@ type TodoContextProps = {
 
 export const TodoContextProvider: FC<TodoContextProps> = ({ children }) => {
 	const [todoState, dispatch] = useReducer(reducer, undefined);
-	console.log('🚀 ~ todoState:', todoState);
 
 	const getAllTasks = useCallback(async () => {
 		try {
