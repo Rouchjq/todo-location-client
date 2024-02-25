@@ -94,8 +94,8 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
 	const handleSaveChange = async () => {
 		try {
 			const { data } = await axios.put(`${base_url}/${props.id}`, {
-				note: props.note,
-				status: props.status,
+				note: note,
+				status: status,
 			});
 
 			toast.success(`Changes saves correctly`);
