@@ -118,7 +118,12 @@ export const Map: FC<MapProps> = ({}) => {
 
 	useEffect(() => {
 		if (todoState) {
-			const promises = todoState?.map(async (task) => {
+			const ListAddressUpdated = todoState.map((task) => ({
+				...task,
+				address: `${task.address}, Miami, FL, USA`,
+			}));
+
+			const promises = ListAddressUpdated?.map(async (task) => {
 				try {
 					const coords = await getLatLng(task.address);
 					return { ...task, coords };
@@ -129,7 +134,10 @@ export const Map: FC<MapProps> = ({}) => {
 			});
 
 			Promise.all(promises)
-				.then((mk) => setMarks(mk))
+				.then((mk) => {
+					console.log('mk', mk);
+					setMarks(mk);
+				})
 				.catch((error) => console.error(error)); // Manejar errores generales
 		}
 	}, [todoState]);
