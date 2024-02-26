@@ -32,17 +32,17 @@ export default function RootLayout({
 		<html lang='en'>
 			<body
 				className={cn(
-					'min-h-screen bg-background font-sans antialiased relative',
+					'bg-background font-sans antialiased relative ',
 					inter.variable,
 				)}
 			>
 				<Providers>{children}</Providers>
 				<Toaster position='top-center' />
-				<footer className='absolute bottom-2 left-2'>
-					<Typography fontSize='minimum' weight='medium' color='foreground'>
+				{/* <footer className='absolute -bottom-10  left-2'>
+					<Typography fontSize='minimum' weight='medium' className='text-gray-400'>
 						Made by Rouchjq & Lehafari
 					</Typography>
-				</footer>
+				</footer> */}
 			</body>
 		</html>
 	);

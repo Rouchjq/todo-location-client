@@ -17,7 +17,7 @@ export default function HomePage() {
 	return (
 		<TodoContextProvider>
 			<Header />
-			<main className='h-max'>
+			<main className='h-max flex justify-center'>
 				{isLoaded ? <Map /> : <Skeleton className='w-full h-[70vh]' />}
 			</main>
 			<Navbar />

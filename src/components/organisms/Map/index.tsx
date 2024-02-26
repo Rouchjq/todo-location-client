@@ -126,8 +126,8 @@ export const Map: FC<MapProps> = ({}) => {
 					disableDefaultUI: true,
 				}}
 				mapContainerStyle={{
-					width: '100vw',
-					height: screenWidth < 768 ? '70vh' : '80vh',
+					width: '90vw',
+					height: screenWidth < 768 ? '66.5vh' : '80vh',
 				}}
 			>
 				{directionsValue.destination !== '' && directionsValue.origin !== '' && (
