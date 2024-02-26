@@ -20,7 +20,13 @@ import { useTodo } from '@/hooks/use-todo';
 import { useMap } from '@/hooks/use-map';
 
 // types
+import { TaskDataType } from '@/types/models/task';
 import { FC } from 'react';
+import { Typography } from '@/components/atoms/typography';
+
+interface MarkDataType extends TaskDataType {
+	coords: google.maps.LatLngLiteral | null;
+}
 
 type MapProps = {};
 
@@ -29,11 +35,8 @@ export const Map: FC<MapProps> = ({}) => {
 	const { directionsValue } = useMap();
 	const { screenWidth } = useWindowSize();
 	const { location, error } = useLocation();
+	const [marks, setMarks] = useState<MarkDataType[]>([]);
 	const [center, setcenter] = useState<google.maps.LatLngLiteral>();
-
-	const [marks, setMarks] = useState<
-		{ id: string; coords: google.maps.LatLngLiteral | null }[]
-	>([]);
 
 	const [response, setResponse] = useState<google.maps.DirectionsResult | null>(
 		null,
@@ -73,14 +76,32 @@ export const Map: FC<MapProps> = ({}) => {
 		[],
 	);
 
-	const setInfoWindow = (marker: google.maps.Marker) => {
-		const infoWinfow = new google.maps.InfoWindow({
-			content: `
-			<div onClick={console.log('jjjj')}>
-			<h4>${'ola como vas'}</h4>
-			<p>${'hace tiempo no c de ti'}</p>
+	const infoTemplate = (taskInfo: MarkDataType) => {
+		return (
+			<div>
+				<Typography Tag='h4' color='foreground' weight='bold'>
+					{taskInfo.title}
+				</Typography>
+				<p>{taskInfo.description}</p>
 			</div>
-		  `,
+		);
+	};
+
+	const setInfoWindow = (marker: google.maps.Marker, taskInfo: MarkDataType) => {
+		const infoWinfow = new google.maps.InfoWindow({
+			content: ` 
+			<div>
+				<h3>
+				<b>
+				${taskInfo.title}
+				
+				</b>
+				</h3>
+				<br/>
+				<p>${taskInfo.address}</p>
+			</div>
+
+			`,
 		});
 		marker.addListener('click', () =>
 			infoWinfow.open({ map: marker.getMap(), anchor: marker }),
@@ -98,13 +119,12 @@ export const Map: FC<MapProps> = ({}) => {
 	useEffect(() => {
 		if (todoState) {
 			const promises = todoState?.map(async (task) => {
-				const id = task.id;
 				try {
 					const coords = await getLatLng(task.address);
-					return { id, coords };
+					return { ...task, coords };
 				} catch (error) {
 					console.error(error); // Manejar el error específico de la tarea
-					return { id, coords: null }; // Opcional: mantener la estructura del objeto
+					return { ...task, coords: null }; // Opcional: mantener la estructura del objeto
 				}
 			});
 
@@ -147,7 +167,7 @@ export const Map: FC<MapProps> = ({}) => {
 						<Marker
 							key={mark.id}
 							position={mark.coords}
-							onLoad={setInfoWindow}
+							onLoad={(ev) => setInfoWindow(ev, mark)}
 							icon={{
 								url: '/assets/job.png',
 								origin: new google.maps.Point(0, 0),

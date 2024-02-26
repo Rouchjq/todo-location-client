@@ -9,4 +9,8 @@ export type TaskDataType = {
 	address: string;
 	description: string;
 	status: keyof typeof taskStatusEnums;
+	coords?: {
+		lat: number;
+		lng: number;
+	} | null;
 };
