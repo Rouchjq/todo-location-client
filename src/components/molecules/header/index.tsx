@@ -1,75 +1,66 @@
 // components
 import {
+	Select,
+	SelectItem,
+	SelectValue,
+	SelectTrigger,
+	SelectContent,
+} from '@/components/atoms/animation/select';
+import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/atoms/popover';
 import { Typography } from '@/components/atoms/typography';
-import { Skeleton } from '@/components/atoms/skeleton';
 import { Button } from '@/components/atoms/button';
-import { Input } from '@/components/atoms/input';
 import { ToggleTheme } from '../toggle-theme';
-import { Label } from '@/components/label';
-
-// commons
-import { travelModeEnums } from '@/commons/enums';
 
 // utils
+import { taskStatusEnums } from '@/commons/enums';
 import { cn } from '@/lib/utils';
-
-// hooks
-import { useLocation } from '@/hooks/use-location';
-import { useMap } from '@/hooks/use-map';
-
-// icons
-import {
-	Bicycle,
-	BusFrontFill,
-	CarFrontFill,
-	PersonWalking,
-} from 'react-bootstrap-icons';
 
 // styles
 import classes from './styles.module.css';
 
 // types
-import { FC, FormEvent, ChangeEvent } from 'react';
+import { FC } from 'react';
+import { selectOptions } from '@/components/organisms/todo/task-details/utils';
+import { SetStateType } from '@/types';
+import { useTodo } from '@/hooks/use-todo';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { base_url } from '@/commons';
+import { todoCases } from '@/context/todo/reducer/case';
 
 type HeaderProps = {};
 
-export const Header: FC<HeaderProps> = ({}) => {
-	const { location } = useLocation();
-	const {
-		isLoaded,
-		fromToAddress,
-		directionsValue,
-		setFromToAddress,
-		setDirectionsValue,
-	} = useMap();
+export const Header: FC<HeaderProps> = () => {
+	const { filterTasks, setFilterTasks, dispatch, setLoading } = useTodo();
 
-	const handleTravelMode = (mode: string) =>
-		setDirectionsValue((prev) => ({ ...prev, travelMode: mode }));
-
-	const handleSubmitDirections = (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setDirectionsValue((prev) => ({
-			...prev,
-			origin: fromToAddress.origin,
-			destination: fromToAddress.destination,
-		}));
+	const handleChangeStatus = (status: string) => {
+		setFilterTasks({ ...filterTasks, status });
 	};
 
-	const handleChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setFromToAddress((prev) => ({ ...prev, [name]: value }));
+	const handleChangeFilterDate = (date: string) => {
+		if (date === filterTasks.date)
+			return setFilterTasks({ ...filterTasks, date: '' });
+		else setFilterTasks({ ...filterTasks, date });
 	};
 
-	const handleMyLocation = () => {
-		if (location) {
-			setFromToAddress((prev) => ({
-				...prev,
-				origin: `${location.lat}, ${location.lng}`,
-			}));
+	const handleClearfilter = async () => {
+		setFilterTasks({ date: '', status: '' });
+
+		try {
+			setLoading(true);
+			const { data, status } = await axios.get(`${base_url}`);
+			if (status === 200) {
+				dispatch({ type: todoCases.GET_ALL_TASKS, payload: data });
+			} else return [];
+		} catch (error) {
+			console.error(error);
+			toast.error(`Error fetching tasks:${error}`);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -79,108 +70,57 @@ export const Header: FC<HeaderProps> = ({}) => {
 				<Popover>
 					<PopoverTrigger asChild>
 						<Button variant='outline' className='text-foreground'>
-							Travel settings{' '}
+							Tasks filter
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className='w-80'>
 						<div className='grid gap-4'>
 							<div className='space-y-2'>
 								<p className='text-xs text-muted-foreground'>
-									Set the options for your travel
+									Here you can filter tasks by status
 								</p>
 							</div>
 
-							<form onSubmit={handleSubmitDirections} className='grid gap-2'>
-								<div className='grid grid-cols-3 items-center gap-4'>
-									<Label htmlFor='origin'>Origin</Label>
-									<Input
-										id='origin'
-										name='origin'
-										className='col-span-2 h-8'
-										value={fromToAddress.origin}
-										onChange={handleChangeAddress}
-									/>
-								</div>
-								<div className='grid grid-cols-3 items-center gap-4'>
-									<Label htmlFor='destination'>Destiny</Label>
-									<Input
-										id='destination'
-										name='destination'
-										className='col-span-2 h-8'
-										onChange={handleChangeAddress}
-										value={fromToAddress.destination}
-									/>
-								</div>
-								{isLoaded ? (
-									<div className='flex justify-evenly '>
-										<Button
-											size='icon'
-											onClick={() => handleTravelMode(google.maps.TravelMode.DRIVING)}
-											variant={
-												directionsValue.travelMode === travelModeEnums.DRIVING
-													? 'ghost'
-													: 'outline'
-											}
-										>
-											<CarFrontFill className='text-foreground' />
-										</Button>
-										<Button
-											size='icon'
-											className='text-foreground'
-											onClick={() => handleTravelMode(google.maps.TravelMode.BICYCLING)}
-											variant={
-												directionsValue.travelMode === travelModeEnums.BICYCLING
-													? 'ghost'
-													: 'outline'
-											}
-										>
-											<Bicycle />
-										</Button>
-										<Button
-											size='icon'
-											className='text-foreground'
-											onClick={() => handleTravelMode(google.maps.TravelMode.TRANSIT)}
-											variant={
-												directionsValue.travelMode === travelModeEnums.TRANSIT
-													? 'ghost'
-													: 'outline'
-											}
-										>
-											<BusFrontFill />
-										</Button>
-										<Button
-											size='icon'
-											className='text-foreground'
-											onClick={() => handleTravelMode(google.maps.TravelMode.WALKING)}
-											variant={
-												directionsValue.travelMode === travelModeEnums.WALKING
-													? 'ghost'
-													: 'outline'
-											}
-										>
-											<PersonWalking />
-										</Button>
-									</div>
-								) : (
-									<div className='flex justify-evenly'>
-										{[...Array(4)].map((_, i) => (
-											<Skeleton key={i} className='h-10 w-10' />
+							<div className='flex gap-2'>
+								<Select value={filterTasks.status} onValueChange={handleChangeStatus}>
+									<SelectTrigger className='w-[140px] mb-5'>
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										{selectOptions.map((option) => (
+											<SelectItem key={option.value} value={option.value}>
+												{option.label}
+											</SelectItem>
 										))}
-									</div>
-								)}
-								<div className='flex justify-between mt-3'>
+									</SelectContent>
+								</Select>
+
+								<Button variant='outline' onClick={handleClearfilter}>
+									Clear filters
+								</Button>
+							</div>
+							{filterTasks.status !== taskStatusEnums.completed && (
+								<div className='flex gap-2'>
 									<Button
-										variant='outline'
-										onClick={handleMyLocation}
-										className='text-foreground'
+										variant={filterTasks.date === 'today' ? 'default' : 'outline'}
+										onClick={() => handleChangeFilterDate('today')}
 									>
-										My location
+										Today
 									</Button>
-									<Button variant='outline' className='text-foreground '>
-										Go
+									<Button
+										variant={filterTasks.date === 'tomorrow' ? 'default' : 'outline'}
+										onClick={() => handleChangeFilterDate('tomorrow')}
+									>
+										Tomorrow
+									</Button>
+									<Button
+										variant={filterTasks.date === 'yesterday' ? 'default' : 'outline'}
+										onClick={() => handleChangeFilterDate('yesterday')}
+									>
+										Yesterday
 									</Button>
 								</div>
-							</form>
+							)}
 						</div>
 					</PopoverContent>
 				</Popover>

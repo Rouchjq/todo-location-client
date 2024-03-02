@@ -135,7 +135,6 @@ export const Map: FC<MapProps> = ({}) => {
 
 			Promise.all(promises)
 				.then((mk) => {
-					console.log('mk', mk);
 					setMarks(mk);
 				})
 				.catch((error) => console.error(error)); // Manejar errores generales

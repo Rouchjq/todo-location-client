@@ -47,18 +47,12 @@ import classes from './styles.module.css';
 import { TaskDataType } from '@/types/models/task';
 import { ChangeEvent, FC } from 'react';
 import { SetStateType } from '@/types';
+import { cn } from '@/lib/utils';
 
-interface TaskDetailsProps extends TaskDataType {
-	setShowTaskList: SetStateType<boolean>;
-}
+interface TaskDetailsProps extends TaskDataType {}
 
-export const TaskDetails: FC<TaskDetailsProps> = ({
-	setShowTaskList,
-	...props
-}) => {
-	const { setDirectionsValue } = useMap();
-	const { todoState, dispatch } = useTodo();
-	const { location, error } = useLocation();
+export const TaskDetails: FC<TaskDetailsProps> = ({ ...props }) => {
+	const { dispatch } = useTodo();
 	const [note, setNote] = useState(props.note);
 	const [status, setStatus] = useState(props.status);
 
@@ -83,13 +77,13 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
 		});
 	};
 
-	const checkChangesExist = () => {
-		const findedTask = todoState?.find((item) => item.id === props.id);
+	// const checkChangesExist = () => {
+	// 	const findedTask = todoState?.find((item) => item.id === props.id);
 
-		if (findedTask)
-			return findedTask.status !== props.status || findedTask.note !== props.note;
-		else return false;
-	};
+	// 	if (findedTask)
+	// 		return findedTask.status !== props.status || findedTask.note !== props.note;
+	// 	else return false;
+	// };
 
 	const handleSaveChange = async () => {
 		try {
@@ -105,35 +99,21 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
 		}
 	};
 
-	const handleTraceRoute = async () => {
-		if (!location) return toast.error('Error getting location');
-		if (error) return toast.error(`Error getting location: ${error}`);
-
-		if (checkChangesExist()) {
-			toast('You have unsaved changes', {
-				icon: <ExclamationCircleFill />,
-				description: ' saving changes automatically...',
-			});
-			await handleSaveChange();
-		}
-
-		setDirectionsValue({
-			destination: props.address,
-			travelMode: travelModeEnums.DRIVING,
-			origin: `${location.lat}, ${location.lng}`,
-		});
-
-		setShowTaskList(false);
-	};
-
 	return (
-		<div>
-			<Typography fontSize='minimum' className={classes.label}>
-				Task ID: #{props.id}
-			</Typography>
-			<Typography fontSize='title' weight='semiBold'>
-				{props.title}
-			</Typography>
+		<div className='p-4 border rounded-lg hover:shadow-md transition-all  bg-background-100'>
+			<div>
+				<div className='flex justify-between'>
+					<Typography fontSize='minimum' className={classes.label}>
+						Task ID: #{props.id}
+					</Typography>
+					<Typography fontSize='minimum' className={cn(` ${classes.label}`)}>
+						{props.date}
+					</Typography>
+				</div>
+				<Typography fontSize='title' weight='semiBold'>
+					{props.title}
+				</Typography>
+			</div>
 			<Row className='my-1'>
 				<Col xs={6}>
 					<Select value={status} onValueChange={handleChangeStatus}>
@@ -165,13 +145,23 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
 				</Col>
 			</Row>
 
-			<div className='mb-3'>
-				<Typography fontSize='subtitle' weight='semiBold'>
-					Address
-				</Typography>
-				<Typography fontSize='body' weight='light' className='text-neutral-400'>
-					{props.address}
-				</Typography>
+			<div className='mb-3 flex justify-between'>
+				<div>
+					<Typography fontSize='subtitle' weight='semiBold'>
+						Address
+					</Typography>
+					<Typography fontSize='body' weight='light' className='text-neutral-400'>
+						{props.address}
+					</Typography>
+				</div>
+				<div>
+					<Typography fontSize='subtitle' weight='semiBold'>
+						Resident
+					</Typography>
+					<Typography fontSize='body' weight='light' className='text-neutral-400'>
+						{props.resident}
+					</Typography>
+				</div>
 			</div>
 
 			<div className='mb-5'>
@@ -182,10 +172,7 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
 				/>
 			</div>
 
-			<div className='flex justify-between'>
-				<Button variant='secondary' onClick={handleTraceRoute}>
-					Trace route
-				</Button>
+			<div className='flex justify-end'>
 				<Button variant='secondary' onClick={handleSaveChange}>
 					Save
 				</Button>

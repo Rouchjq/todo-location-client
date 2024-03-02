@@ -18,9 +18,7 @@ export const Providers: FC<ProvidersProps> = ({ children }) => {
 			defaultTheme='system'
 			disableTransitionOnChange
 		>
-			<AppContextProviders>
-				<MapContextProvider>{children}</MapContextProvider>
-			</AppContextProviders>
+			<AppContextProviders>{children}</AppContextProviders>
 		</ThemeProvider>
 	);
 };

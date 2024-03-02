@@ -7,6 +7,7 @@ export type TaskDataType = {
 	date: string;
 	title: string;
 	address: string;
+	resident: string;
 	description: string;
 	status: keyof typeof taskStatusEnums;
 	coords?: {
