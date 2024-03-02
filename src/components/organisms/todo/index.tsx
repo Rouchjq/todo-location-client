@@ -80,7 +80,7 @@ export const Todo: FC<TodoProps> = ({}) => {
 						)}
 					</div>
 				) : (
-					<div className='flex flex-col justify-center '>
+					<div className='h-[70vh] md:h-full flex flex-col justify-center '>
 						<div className='mb-5' onClick={() => setTaskSelected(undefined)}>
 							<ArrowLeftIcon className='h-[1.5rem] w-[1.5rem] text-foreground cursor-pointer' />
 						</div>

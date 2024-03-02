@@ -13,7 +13,7 @@ export default function HomePage() {
 	return (
 		<TodoContextProvider>
 			<Header />
-			<main className='h-[90vh]'>
+			<main className='h-full px-5 md:h-[90vh]'>
 				<Todo />
 			</main>
 		</TodoContextProvider>

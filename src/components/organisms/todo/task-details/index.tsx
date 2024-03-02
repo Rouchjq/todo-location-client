@@ -100,7 +100,7 @@ export const TaskDetails: FC<TaskDetailsProps> = ({ ...props }) => {
 	};
 
 	return (
-		<div className='p-4 border rounded-lg hover:shadow-md transition-all  bg-background-100'>
+		<div className='p-4 border rounded-lg hover:shadow-md transition-all bg-accent'>
 			<div>
 				<div className='flex justify-between'>
 					<Typography fontSize='minimum' className={classes.label}>
